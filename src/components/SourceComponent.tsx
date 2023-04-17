@@ -1,16 +1,15 @@
-import { SourceInstance } from "../types";
+interface SourceProps {
+  style: React.CSSProperties;
+  onClick: () => void;
+}
 
-const SourceComponent = ({ source }: { source: SourceInstance }) => {
-  const color = source.getColor();
+const Source: React.FC<SourceProps> = ({ style, onClick }) => {
   return (
-    <div
-      className="source"
-      title={`${color[0]},${color[1]},${color[2]}`}
-      style={{
-        backgroundColor: `rgb(${color[0]},${color[1]},${color[2]})`,
-      }}
-    ></div>
+    <div 
+      className="source" 
+      style={{ borderRadius: "50%", ...style }} 
+      onClick={onClick} 
+    />
   );
 };
-
-export default SourceComponent;
+export default Source

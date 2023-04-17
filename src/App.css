@@ -32,6 +32,7 @@ body {
   height: 50px;
   border-radius: 50%;
   border: 1px solid rgba(0, 0, 0, 0.4);
+  cursor: pointer;
 }
 .title-board {
   display: grid;

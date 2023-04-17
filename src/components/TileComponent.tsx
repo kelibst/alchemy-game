@@ -1,16 +1,14 @@
-import { TileInstance } from "../../types";
+interface TileProps {
+  style: React.CSSProperties;
+  onClick: () => void;
+}
 
-const TileComponent = ({ tile }: { tile: TileInstance }) => {
-  const color = tile.getColor();
+const Tile: React.FC<TileProps> = ({ style, onClick }) => {
   return (
-    <div
-      title={`${color[0]}, ${color[1]}, ${color[2]}`}
-      className="tile"
-      style={{
-        backgroundColor: `rgb(${color[0]}, ${color[1]}, ${color[2]})`,
-      }}
+    <div 
+      className="tile" 
+      style={{...style }} 
     />
   );
 };
-
-export default TileComponent;
+export default Tile

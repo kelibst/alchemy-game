@@ -1,4 +1,6 @@
-import { RGBTuple } from "../../types";
+// import { RGBTuple } from "../../types";
+
+import { RGBTuple } from "../types";
 
 export default class Source {
   private _color: RGBTuple;

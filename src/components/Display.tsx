@@ -1,82 +1,116 @@
-import React, { useState } from "react";
-// import "./Game.css";
+import React, { SetStateAction, useContext, useState } from "react";
+import { AppContext, IAppContext } from "../context/sourcContext";
+import Source from "./SourceComponent";
+import Tile from "./TileComponent";
+import { generateColor } from "../reducers/movesReducer";
 
-interface TileProps {
-  color: string;
-  onClick: () => void;
-}
+const Game: React.FC<{ width: number; height: number }> = ({ width, height }) => {
+  const { totalMoves, sourceMove, setTotalMoves, setSourceMoves, tiles, source, updateSourceColor, updateTilesColor } = useContext(
+    AppContext
+  ) as IAppContext;
 
-const Tile: React.FC<TileProps> = ({ color, onClick }) => {
-  return <div className="tile" style={{ backgroundColor: color }} onClick={onClick} />;
-};
 
-interface SourceProps {
-  color: string;
-  style: any;
-}
 
-const Source: React.FC<SourceProps> = ({ color, style }) => {
-  return <div className="source" style={{ backgroundColor: color, borderRadius: "50%" }} />;
-};
 
-interface GameProps {
-  width: number;
-  height: number;
-}
-
-const Game: React.FC<GameProps> = ({ width, height }) => {
-  const [tiles, setTiles] = useState<string[][]>(
-    new Array(height).fill(new Array(width).fill("rgb(0, 0, 0)"))
-  );
-  let sourceArr = [];
-  for (let x = 1; x < 5; x += 1) {
-    if (x % 2 !== 0) {
-      sourceArr.push(new Array(width).fill("rgb(0, 0, 0)"))
-    } else {
-      sourceArr.push(new Array(height).fill("rgb(0, 0, 0)"))
+  const sourceClicked = (rowIndex: number): string => {
+    switch(rowIndex){
+      case 0:
+        return "Top";
+      case 1: 
+        return "Left";
+      case 2: 
+        return "Bottom";
+      default:
+        return "Right";
     }
-  }
-
-  const [source, setSource] = useState<string[][]>(sourceArr)
-
-  const handleTileClick = (rowIndex: number, colIndex: number) => {
-    // Update the color of the clicked tile
-    const newTiles = [...tiles];
-    newTiles[rowIndex][colIndex] = "rgb(255, 255, 255)";
-    setTiles(newTiles);
   };
 
+
+  const handleTileClick = (rowIndex: number, colIndex: number) => {
+    
+  };
+
+  const handleSourceClick = (rowIndex: number, colIndex: number) => {
+    const sourceDir = sourceClicked(rowIndex);
+  
+    if (sourceMove < 3) {
+      switch (sourceDir) {
+        case "Top":
+           const newCol1 = generateColor(height, rowIndex, sourceMove);
+          updateSourceColor( rowIndex, colIndex, newCol1);
+          updateTilesColor(height, rowIndex, colIndex, "height");
+          break;
+        case "Left":
+          const newCol2 = generateColor(width, rowIndex, sourceMove);
+          updateSourceColor( rowIndex, colIndex, newCol2);
+          updateTilesColor(width, rowIndex, colIndex, "width");
+          break;
+        case "Bottom":
+          // TODO: Implement this case
+          const newCol3 = generateColor(width, rowIndex, sourceMove);
+          updateSourceColor( rowIndex, colIndex, newCol3);
+          updateTilesColor(height-1, rowIndex, colIndex, "-height");
+          break;
+        case "Right":
+          // TODO: Implement this case
+          const newCol4 = generateColor(height, rowIndex, sourceMove);
+          updateSourceColor( rowIndex, colIndex, newCol4);
+          updateTilesColor(width-1, rowIndex, colIndex, "-width");
+          break;
+      }
+      setSourceMoves(sourceMove + 1);
+    }
+  };
+  
+  
   return (
     <div className="game">
-      <div className="board">
-        <div className="tile-board">
-          <div className="flex justify-center">
-            {source[0].map((row, ind) => <Source style={{ gridArea: "left" }} color={row} />)}
-          </div>
-          <div>
-            {tiles.map((row, rowIndex) => (
-            <React.Fragment key={rowIndex}>
-              <div className="flex justify-center">
-                <Source color={source[1][rowIndex]} style={{ gridArea: "left" }}/>
-              {row.map((color, colIndex) => (
+  <div className="board">
+    <div className="tile-board">
+      <div className="flex justify-center">
+        {source[0].map((row, ind) => (
+          <Source
+            key={`source-top-${ind}`}
+            style={{ backgroundColor: `rgb(${row[0]}, ${row[1]},${row[2]})`}}
+            onClick={() => handleSourceClick(0, ind)}
+          />
+        ))}
+      </div>
+      <div>
+        {tiles.map((row, rowIndex) => (
+          <React.Fragment key={`row-${rowIndex}`}>
+            <div className="flex justify-center">
+              <Source
+                style={{ backgroundColor: `rgb(${source[1][rowIndex][0]}, ${source[1][rowIndex][1]},${source[1][rowIndex][2]})`}}
+                onClick={() => handleSourceClick(1, rowIndex)}
+              />
+              {row.map((colRow, colIndex) => (
                 <Tile
                   key={`${rowIndex}-${colIndex}`}
-                  color={color}
+                  style={{ backgroundColor: `rgb(${colRow[0]}, ${colRow[1]},${colRow[2]})`}}
                   onClick={() => handleTileClick(rowIndex, colIndex)}
                 />
               ))}
-               <Source color={source[3][rowIndex]} style={{ gridArea: "left" }}/>
-              </div>
-            </React.Fragment>
-          ))}
-          </div>
-          <div className="flex justify-center">
-          {source[2].map((color, ind) => <Source style={{ gridArea: "left" }} color={color} />)}
-        </div>
-        </div>
+              <Source
+                style={{ backgroundColor: `rgb(${source[3][rowIndex][0]}, ${source[3][rowIndex][1]},${source[3][rowIndex][2]})`}}
+                onClick={() => handleSourceClick(3, rowIndex)}
+              />
+            </div>
+          </React.Fragment>
+        ))}
+      </div>
+      <div className="flex justify-center">
+        {source[2].map((row, ind) => (
+          <Source
+            key={`source-bottom-${ind}`}
+            style={{ backgroundColor: `rgb(${row[0]}, ${row[1]},${row[2]})`}}
+            onClick={() => handleSourceClick(2, ind)}
+          />
+        ))}
       </div>
     </div>
-  );
-};
+  </div>
+</div>
+  );}
 
-export default Game;
+  export default Game
